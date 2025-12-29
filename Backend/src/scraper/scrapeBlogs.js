@@ -2,34 +2,31 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const mongoose = require("mongoose");
 const Article = require("../models/Article");
-const connectDB = require("../config/db");
 require("dotenv").config({
   path: require("path").resolve(__dirname, "../../.env")
 });
+
 const BLOG_URL = "https://beyondchats.com/blogs/";
 
-
-
 async function scrapeBlogs() {
-     try {
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log("MongoDB Connected");
-      } catch (error) {
-        console.error(error);
-        process.exit(1);
-      }
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB Connected");
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+
   const { data } = await axios.get(BLOG_URL);
   const $ = cheerio.load(data);
 
   const articleLinks = [];
 
- //all article links scrapping
   $("h2 a").each((i, el) => {
     const link = $(el).attr("href");
     if (link) articleLinks.push(link);
   });
 
-  
   const articlesToScrape = articleLinks.slice(-5);
 
   for (const link of articlesToScrape) {
@@ -37,94 +34,77 @@ async function scrapeBlogs() {
     const $$ = cheerio.load(articlePage.data);
 
     const title = $$("h1").first().text().trim();
-    // Hero image
+
+    // Hero Image
     const heroImage = $$(".elementor-widget-theme-post-content img")
       .first()
       .attr("src");
 
-    const contentBlocks = [];
-//main div scrapping
+    let markdown = `# ${title}\n\n`;
+
+    if (heroImage) {
+      markdown += `![Hero Image](${heroImage})\n\n`;
+    }
+    const contentImages = [];
+    // Main content
     $$(".elementor-widget-theme-post-content")
       .find("p, h2, h3, ul, ol, img")
       .each((i, el) => {
-        
         const tag = el.tagName.toLowerCase();
-       
+
         // Paragraph
         if (tag === "p") {
           const text = $$(el).text().trim();
-          if (text) {
-            contentBlocks.push({
-              blockType: "paragraph",
-              text,
-            });
-          }
+          if (text) markdown += `${text}\n\n`;
         }
 
         // Headings
-        if (tag === "h2" || tag === "h3") {
-          const text = $$(el).text().trim();
-
-          if (text) {
-            contentBlocks.push({
-              blockType: "heading",
-              text,
-            });
-          }
+        if (tag === "h2") {
+          markdown += `## ${$$(el).text().trim()}\n\n`;
         }
 
-        // Image
+        if (tag === "h3") {
+          markdown += `### ${$$(el).text().trim()}\n\n`;
+        }
+
+        // Images
         if (tag === "img") {
           const src = $$(el).attr("src");
-
-          if (src) {
-            contentBlocks.push({
-              blockType: "image",
-              src,
-            });
-          }
+          contentImages.push(src);
+          if (src) markdown += `![Image](${src})\n\n`;
         }
 
+        // Lists
         if (tag === "ul" || tag === "ol") {
-          const listItems = [];
-          $$(el)
-            .find("li")
-            .each((i, li) => {
-              const liText = $$(li).text().trim();
-
-              if (liText) listItems.push(liText);
-            });
-
-          if (listItems.length > 0) {
-            contentBlocks.push({
-              blockType: "list",
-              listItems,
-            });
-          }
+          $$(el).find("li").each((i, li) => {
+            const text = $$(li).text().trim();
+            if (text) markdown += `- ${text}\n`;
+          });
+          markdown += `\n`;
         }
       });
 
-  
     await Article.create({
       title,
       heroImage,
-      contentBlocks,
+      contentImages: contentImages,
+      contentBlocks: markdown,
+      aiContentBlocks: "",
       sourceUrl: link,
-      aiContentBlocks: [],
       isUpdated: false,
     });
 
-    console.log(`saved article: ${title}`);
+    console.log(`✅ Saved article: ${title}`);
   }
 }
 
 scrapeBlogs()
   .then(() => {
-    console.log(" Scraping completed");
+    console.log("🚀 Scraping completed");
     process.exit(0);
   })
   .catch((err) => {
-    console.error("Scraping error:", err);
+    console.error("❌ Scraping error:", err);
     process.exit(1);
   });
 

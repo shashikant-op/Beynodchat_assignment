@@ -1,33 +1,15 @@
 const mongoose = require("mongoose");
 
-const contentBlockSchema = new mongoose.Schema(
-  {
-    blockType: {
-      type: String,
-      enum: ["paragraph", "heading", "image", "list"],
-      required: true,
-    },
-
-    text: {
-      type: String, 
-    },
-
-    src: {
-      type: String, 
-    },
-
-    listItems: {
-      type: [String], 
-    },
-  },
-  { _id: false }
-);
 
 const articleSchema = new mongoose.Schema(
   {
     title: {
       type: String,
       required: true,
+    },
+    aititle: {
+      type: String,
+      default: "",
     },
 
     date: {
@@ -38,20 +20,31 @@ const articleSchema = new mongoose.Schema(
     heroImage: {
       type: String,
     },
+    contentImages: {
+  type: [String], 
+  default: [],
+},
 
    //original article
-    contentBlocks: [contentBlockSchema],
+    contentBlocks: {
+      type: String,
+      required: true,
+    },
 
     //updated article
-    aiContentBlocks: [contentBlockSchema],
+    aiContentBlocks:{
+      type: String,
+      default: "",
+    },
 
     sourceUrl: {
       type: String,
       required: true,
     },
     referenceUrl: {
-      type: String,
-    },
+  type: [String], 
+  default: [],
+},
     isUpdated: {
       type: Boolean,
       default: false,
