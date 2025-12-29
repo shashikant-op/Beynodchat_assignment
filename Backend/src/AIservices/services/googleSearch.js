@@ -26,7 +26,6 @@ async function googleSearch(title) {
       )
       .slice(0, 2);
 
-    console.log(filteredLinks, "++++++++++++++");
 
     return filteredLinks;
   } catch (error) {
