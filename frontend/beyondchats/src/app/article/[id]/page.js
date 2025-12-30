@@ -16,8 +16,8 @@ export default function Page({ params }) {
   if (!article) return <h1>Loading...</h1>;
 
   return (
-      <div className='articlessectio flex flex-col align-center md:flex-row gap-y-20 md:gap-1 p-1 '>
-        <div className='old_article_section bg-[#E1E0DA] overflow-hidden rounded-[24px] h-fit   w-full p-3'
+      <div className='articlessectio flex flex-col align-center md:flex-row md:gap-1 gap-y-5 p-1 '>
+        <div className='old_article_section bg-[#E1E0DA] overflow-hidden rounded-[24px] h-fit   md:m-3 w-full p-3'
         style={{ boxShadow: "0 30px 60px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.6)", }} >
              <article className="markdown-container">
               <h4>Original Article</h4>
@@ -26,7 +26,7 @@ export default function Page({ params }) {
               </ReactMarkdown>
             </article>
         </div>
-        <div className='ai_created_section overflow-hidden h-fit bg-[#E1E0DA] rounded-[24px] w-full'
+        <div className='ai_created_section overflow-hidden h-fit bg-[#E1E0DA] rounded-[24px] md:m-3 w-full'
         style={{ boxShadow: "0 30px 60px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.6)", }} >
           <div className='overflow-hidden'>
           <img className="rounded-t-[24px] " src={article.heroImage} />
