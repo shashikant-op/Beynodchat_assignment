@@ -34,7 +34,7 @@ function ArticlePage() {
     <div>
      <div className="justify-center  bg-[var(--background)] min-h-screen py-5">
          <div className="flex flex-row justify-center flex-wrap">
-            {articles.slice(0, 2).map((article) => (
+            {articles.slice(0, 1).map((article) => (
                 <Card key={article.id} article={article} />
             ))}
             </div>
@@ -42,7 +42,7 @@ function ArticlePage() {
             <div className="flex justify-center flex-col items-center p-4 text-gray-600 hover:text-gray-800 cursor-pointer">
             <span className="text-3xl my-4">Next Article</span>
             <div>
-                {articles.slice(2).map((article) => (
+                {articles.slice(1).map((article) => (
                 <NextCard key={article.id} article={article} />
                 ))}
             </div>
