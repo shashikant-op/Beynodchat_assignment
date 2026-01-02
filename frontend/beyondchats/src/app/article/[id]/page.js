@@ -34,7 +34,9 @@ export default function Page({ params }) {
             </article>
             
         </div>
-        <div className='old_article_section bg-[#E1E0DA] overflow-hidden rounded-[24px] h-fit   md:m-3 w-full p-3'
+        {
+          article?.contentBlocks? (
+             <div className='old_article_section bg-[#E1E0DA] overflow-hidden rounded-[24px] h-fit   md:m-3 w-full p-3'
         style={{ boxShadow: "0 30px 60px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.6)", }} >
              <article className="markdown-container">
               <h4>Original Article</h4>
@@ -43,6 +45,9 @@ export default function Page({ params }) {
               </ReactMarkdown>
             </article>
         </div>
+          ):('')
+        }
+       
 
       </div>
   );
